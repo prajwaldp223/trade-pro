@@ -1,0 +1,96 @@
+<%- include('../partials/header') %>
+
+  <div class="container py-5">
+    <h1 class="mb-5">Wallet</h1>
+
+    <div class="grid grid-cols-3 gap-6">
+      <!-- Balance Card -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Current Balance</h3>
+        </div>
+        <div class="card-content">
+          <p class="text-3xl font-bold">$<%= typeof user.balance==='number' ? user.balance.toFixed(2) :
+              parseFloat(user.balance || 0).toFixed(2) %>
+          </p>
+          <p class="text-muted mt-2">Available for trading and withdrawals</p>
+        </div>
+      </div>
+
+      <!-- Deposit/Withdraw Card -->
+      <div class="card col-span-2">
+        <div class="card-header">
+          <h3 class="card-title">Manage Funds</h3>
+          <p class="card-description">Deposit or withdraw funds from your account</p>
+        </div>
+        <div class="card-content">
+          <div class="tabs">
+            <div class="tab active" data-tab="deposit-tab">Deposit</div>
+            <div class="tab" data-tab="withdraw-tab">Withdraw</div>
+          </div>
+
+          <div id="deposit-tab" class="tab-content active">
+            <form action="/wallet/deposit" method="POST">
+              <div class="form-group">
+                <label for="deposit-amount" class="form-label">Amount to Deposit</label>
+                <div class="flex">
+                  <span
+                    class="inline-flex items-center px-3 border border-r-0 border-gray-300 bg-gray-50 text-gray-500 rounded-l-md">$</span>
+                  <input type="number" id="deposit-amount" name="amount" class="form-control rounded-l-none" min="1"
+                    step="0.01" value="100" required>
+                </div>
+              </div>
+              <div class="mt-4">
+                <button type="submit" class="btn btn-primary btn-block">Deposit Funds</button>
+              </div>
+              <div class="text-muted mt-3">
+                <p>Note: In a real application, this would connect to a payment processor. For this demo, deposits are
+                  simulated.</p>
+              </div>
+            </form>
+          </div>
+
+          <div id="withdraw-tab" class="tab-content">
+            <form action="/wallet/withdraw" method="POST">
+              <div class="form-group">
+                <label for="withdraw-amount" class="form-label">Amount to Withdraw</label>
+                <div class="flex">
+                  <span
+                    class="inline-flex items-center px-3 border border-r-0 border-gray-300 bg-gray-50 text-gray-500 rounded-l-md">$</span>
+                  <input type="number" id="withdraw-amount" name="amount" class="form-control rounded-l-none" min="1"
+                    max="<%= user.balance %>" step="0.01" value="100" required>
+                </div>
+              </div>
+              <div class="mt-4">
+                <button type="submit" class="btn btn-primary btn-block" <%=user.balance < 1 ? 'disabled' : ''
+                  %>>Withdraw Funds</button>
+                <% if (user.balance < 1) { %>
+                  <p class="text-danger mt-2 text-center">Insufficient funds</p>
+                  <% } %>
+              </div>
+              <div class="text-muted mt-3">
+                <p>Note: In a real application, this would connect to a payment processor. For this demo, withdrawals
+                  are simulated.</p>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Transaction History Card -->
+    <div class="card mt-6">
+      <div class="card-header">
+        <h3 class="card-title">Transaction History</h3>
+        <p class="card-description">Recent deposits and withdrawals</p>
+      </div>
+      <div class="card-content">
+        <div class="text-center py-4">
+          <p class="text-muted mb-4">View your complete transaction history</p>
+          <a href="/transactions" class="btn btn-primary">View All Transactions</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../partials/footer') %>

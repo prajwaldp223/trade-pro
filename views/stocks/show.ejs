@@ -1,0 +1,265 @@
+<%- include('../partials/header') %>
+
+  <div class="container py-5">
+    <div class="flex justify-between items-center mb-5">
+      <div>
+        <h1 class="mb-1">
+          <%= stock.name %>
+        </h1>
+        <p class="text-muted">
+          <%= stock.id %> • <%= stock.sector %>
+        </p>
+      </div>
+      <a href="/stocks" class="btn btn-outline">
+        Back to Stocks
+      </a>
+    </div>
+
+    <div class="grid grid-cols-3 gap-6">
+      <!-- Stock Info Card -->
+      <div class="card col-span-2">
+        <div class="card-header">
+          <div class="flex justify-between items-start">
+            <h3 class="card-title">Stock Information</h3>
+            <div
+              class="<%= typeof stock.change === 'number' && stock.change >= 0 ? 'text-success' : 'text-danger' %> flex items-center">
+              <i
+                class="fas fa-<%= typeof stock.change === 'number' && stock.change >= 0 ? 'arrow-up' : 'arrow-down' %> mr-1"></i>
+              <span class="text-lg font-semibold">
+                <%= typeof stock.change==='number' && stock.change>= 0 ? '+' : '' %><%= typeof
+                    stock.change_percent==='number' ? stock.change_percent.toFixed(2) : '0.00' %>%
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="card-content">
+          <div class="flex flex-col md:flex-row justify-between mb-6">
+            <div>
+              <p class="text-3xl font-bold">$<%= typeof stock.price==='number' ? stock.price.toFixed(2) :
+                  parseFloat(stock.price || 0).toFixed(2) %>
+              </p>
+              <p class="<%= typeof stock.change === 'number' && stock.change >= 0 ? 'text-success' : 'text-danger' %>">
+                <%= typeof stock.change==='number' && stock.change>= 0 ? '+' : '' %>$<%= typeof stock.change==='number'
+                    ? Math.abs(stock.change).toFixed(2) : Math.abs(parseFloat(stock.change || 0)).toFixed(2) %> today
+              </p>
+            </div>
+            <div class="mt-4 md:mt-0 grid grid-cols-2 gap-x-8 gap-y-2">
+              <div>
+                <p class="text-muted">Volume</p>
+                <p class="font-medium">
+                  <%= stock.volume.toLocaleString() %>
+                </p>
+              </div>
+              <div>
+                <p class="text-muted">Market Cap</p>
+                <p class="font-medium">$<%= (stock.market_cap / 1000000000).toFixed(2) %>B</p>
+              </div>
+              <div>
+                <p class="text-muted">Sector</p>
+                <p class="font-medium">
+                  <%= stock.sector %>
+                </p>
+              </div>
+              <div>
+                <p class="text-muted">Symbol</p>
+                <p class="font-medium">
+                  <%= stock.id %>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Placeholder for chart -->
+          <div
+            style="background-color: #f3f4f6; border-radius: 8px; height: 250px; display: flex; align-items: center; justify-content: center;">
+            <p class="text-muted">Stock price chart would appear here</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Trade Card -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Trade <%= stock.id %>
+          </h3>
+          <p class="card-description">Current price: $<%= typeof stock.price==='number' ? stock.price.toFixed(2) :
+              parseFloat(stock.price || 0).toFixed(2) %>
+          </p>
+        </div>
+        <div class="card-content">
+          <div class="tabs">
+            <div class="tab active" data-tab="buy-tab">Buy</div>
+            <div class="tab" data-tab="sell-tab">Sell</div>
+          </div>
+
+          <div id="buy-tab" class="tab-content active">
+            <form action="/stocks/<%= stock.id %>/buy" method="POST">
+              <div class="form-group">
+                <label for="quantity" class="form-label">Quantity</label>
+                <input type="number" id="quantity" name="quantity" class="form-control" min="1" value="1" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Estimated Cost</label>
+                <p class="text-2xl font-bold" id="total-amount">$<%= typeof stock.price==='number' ?
+                    stock.price.toFixed(2) : parseFloat(stock.price || 0).toFixed(2) %>
+                </p>
+                <span id="stock-price" data-price="<%= stock.price %>" class="hidden"></span>
+              </div>
+
+              <div class="mt-4">
+                <p class="text-muted mb-3">Available Balance: $<%= user ? (typeof user.balance==='number' ?
+                    user.balance.toFixed(2) : parseFloat(user.balance || 0).toFixed(2)) : '0.00' %>
+                </p>
+
+                <% if (user) { %>
+                  <button type="submit" class="btn btn-primary btn-block" <%=(user.balance && stock.price &&
+                    parseFloat(user.balance) < parseFloat(stock.price)) ? 'disabled' : '' %>>
+                    Buy Stock
+                  </button>
+                  <% if (user.balance && stock.price && parseFloat(user.balance) < parseFloat(stock.price)) { %>
+                    <p class="text-danger mt-2 text-center">Insufficient funds</p>
+                    <% } %>
+                      <% } else { %>
+                        <a href="/auth/login" class="btn btn-primary btn-block">Login to Trade</a>
+                        <% } %>
+              </div>
+            </form>
+          </div>
+
+          <div id="sell-tab" class="tab-content">
+            <form action="/stocks/<%= stock.id %>/sell" method="POST">
+              <div class="form-group">
+                <label for="sell-quantity" class="form-label">Quantity</label>
+                <input type="number" id="sell-quantity" name="quantity" class="form-control" min="1" value="1" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Estimated Value</label>
+                <p class="text-2xl font-bold" id="sell-total-amount">$<%= typeof stock.price==='number' ?
+                    stock.price.toFixed(2) : parseFloat(stock.price || 0).toFixed(2) %>
+                </p>
+              </div>
+
+              <div class="mt-4">
+                <p class="text-muted mb-3">Shares Owned: <%= holding ? holding.quantity : 0 %>
+                </p>
+
+                <% if (user) { %>
+                  <button type="submit" class="btn btn-danger btn-block" <%=!holding || holding.quantity < 1
+                    ? 'disabled' : '' %>>
+                    Sell Stock
+                  </button>
+                  <% if (!holding || holding.quantity < 1) { %>
+                    <p class="text-danger mt-2 text-center">You don't own any shares</p>
+                    <% } %>
+                      <% } else { %>
+                        <a href="/auth/login" class="btn btn-primary btn-block">Login to Trade</a>
+                        <% } %>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Your Position -->
+    <div class="card mt-6">
+      <div class="card-header">
+        <h3 class="card-title">Your Position</h3>
+      </div>
+      <div class="card-content">
+        <% if (holding) { %>
+          <div class="grid grid-cols-4 gap-6">
+            <div>
+              <p class="text-muted">Shares Owned</p>
+              <p class="text-xl font-bold">
+                <%= holding.quantity %>
+              </p>
+            </div>
+            <div>
+              <p class="text-muted">Average Cost</p>
+              <p class="text-xl font-bold">$<%= typeof holding.avg_price==='number' ? holding.avg_price.toFixed(2) :
+                  parseFloat(holding.avg_price || 0).toFixed(2) %>
+              </p>
+            </div>
+            <div>
+              <p class="text-muted">Current Value</p>
+              <p class="text-xl font-bold">$<%= ((typeof stock.price==='number' ? stock.price : parseFloat(stock.price
+                  || 0)) * (typeof holding.quantity==='number' ? holding.quantity : parseFloat(holding.quantity ||
+                  0))).toFixed(2) %>
+              </p>
+            </div>
+            <div>
+              <% const stockPrice=typeof stock.price==='number' ? stock.price : parseFloat(stock.price || 0); const
+                holdingQuantity=typeof holding.quantity==='number' ? holding.quantity : parseFloat(holding.quantity ||
+                0); const avgPrice=typeof holding.avg_price==='number' ? holding.avg_price :
+                parseFloat(holding.avg_price || 0); const costBasis=avgPrice * holdingQuantity; const
+                currentValue=stockPrice * holdingQuantity; const profit=currentValue - costBasis; const
+                profitPercent=(profit / costBasis) * 100; %>
+                <p class="text-muted">Profit/Loss</p>
+                <p class="text-xl font-bold <%= profit >= 0 ? 'text-success' : 'text-danger' %>">
+                  <%= profit>= 0 ? '+' : '' %>$<%= profit.toFixed(2) %>
+                </p>
+                <p class="<%= profit >= 0 ? 'text-success' : 'text-danger' %>">
+                  <%= profit>= 0 ? '+' : '' %><%= profitPercent.toFixed(2) %>%
+                </p>
+            </div>
+          </div>
+          <% } else { %>
+            <p class="text-center py-4 text-muted">You don't own any shares of <%= stock.id %> yet.</p>
+            <% } %>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Buy/sell tabs
+      const tabs = document.querySelectorAll('.tab');
+      const tabContents = document.querySelectorAll('.tab-content');
+
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          const target = tab.getAttribute('data-tab');
+
+          // Remove active class from all tabs and contents
+          tabs.forEach(t => t.classList.remove('active'));
+          tabContents.forEach(c => c.classList.remove('active'));
+
+          // Add active class to clicked tab and corresponding content
+          tab.classList.add('active');
+          document.getElementById(target).classList.add('active');
+        });
+      });
+
+      // Update total based on quantity
+      const quantityInput = document.getElementById('quantity');
+      const sellQuantityInput = document.getElementById('sell-quantity');
+      const stockPriceElement = document.getElementById('stock-price');
+      const stockPrice = parseFloat(stockPriceElement.dataset.price) || 0;
+      const totalAmount = document.getElementById('total-amount');
+      const sellTotalAmount = document.getElementById('sell-total-amount');
+
+      function updateTotal() {
+        const quantity = parseInt(quantityInput.value) || 1;
+        const total = (quantity * stockPrice).toFixed(2);
+        totalAmount.textContent = `$${total}`;
+      }
+
+      function updateSellTotal() {
+        const quantity = parseInt(sellQuantityInput.value) || 1;
+        const total = (quantity * stockPrice).toFixed(2);
+        sellTotalAmount.textContent = `$${total}`;
+      }
+
+      quantityInput.addEventListener('input', updateTotal);
+      sellQuantityInput.addEventListener('input', updateSellTotal);
+
+      // Initialize
+      updateTotal();
+      updateSellTotal();
+    });
+  </script>
+
+  <%- include('../partials/footer') %>

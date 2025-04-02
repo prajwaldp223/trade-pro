@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>
+    <%= title %>
+  </title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container navbar-container">
+      <a href="/" class="navbar-brand">TradePro</a>
+
+      <ul class="navbar-nav">
+        <li><a href="/dashboard" class="<%= title.includes('Dashboard') ? 'active' : '' %>">Dashboard</a></li>
+        <li><a href="/stocks" class="<%= title.includes('Stocks') ? 'active' : '' %>">Stocks</a></li>
+        <% if (user) { %>
+          <li><a href="/portfolio" class="<%= title.includes('Portfolio') ? 'active' : '' %>">Portfolio</a></li>
+          <li><a href="/wallet" class="<%= title.includes('Wallet') ? 'active' : '' %>">Wallet</a></li>
+          <% } %>
+            <li><a href="/transactions" class="<%= title.includes('Transactions') ? 'active' : '' %>">Transactions</a>
+            </li>
+
+      </ul>
+
+      <div class="navbar-auth">
+        <% if (user) { %>
+          <div class="dropdown">
+            <button class="btn btn-outline">
+              <a href="/profile">
+                <%=user.username %> ($<%= typeof user.balance==='number' ? user.balance.toFixed(2) : '0.00' %>)
+              </a>
+            </button>
+            <button class="btn btn-danger">
+              <a href="/auth/logout">Logout</a>
+            </button>
+            <!-- <div class="dropdown-menu">
+             
+              
+              <a href="/auth/logout">Logout</a>
+            </div> -->
+          </div>
+          <% } else { %>
+            <a href="/auth/login" class="btn btn-outline">Login</a>
+            <a href="/auth/register" class="btn btn-primary">Register</a>
+            <% } %>
+      </div>
+
+      <button id="menu-toggle" class="navbar-toggler">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile menu -->
+  <div id="mobile-menu" class="mobile-menu">
+    <ul>
+      <li><a href="/" class="<%= title.includes('Home') ? 'active' : '' %>">Home</a></li>
+      <li><a href="/stocks" class="<%= title.includes('Stocks') ? 'active' : '' %>">Stocks</a></li>
+      <% if (user) { %>
+        <li><a href="/portfolio" class="<%= title.includes('Portfolio') ? 'active' : '' %>">Portfolio</a></li>
+        <li><a href="/wallet" class="<%= title.includes('Wallet') ? 'active' : '' %>">Wallet</a></li>
+        <li><a href="/dashboard" class="<%= title.includes('Dashboard') ? 'active' : '' %>">Dashboard</a></li>
+        <li><a href="/profile" class="<%= title.includes('Profile') ? 'active' : '' %>">Profile</a></li>
+        <li><a href="/transactions" class="<%= title.includes('Transactions') ? 'active' : '' %>">Transactions</a></li>
+        <li><a href="/auth/logout">Logout</a></li>
+        <% } else { %>
+          <div class="mobile-menu-auth">
+            <a href="/auth/login" class="btn btn-outline">Login</a>
+            <a href="/auth/register" class="btn btn-primary">Register</a>
+          </div>
+          <% } %>
+    </ul>
+  </div>
+
+  <!-- Flash messages -->
+  <% if(success_msg && success_msg.length> 0) { %>
+    <div class="container mt-4">
+      <div class="alert alert-success">
+        <%= success_msg %>
+      </div>
+    </div>
+    <% } %>
+
+      <% if(error_msg && error_msg.length> 0) { %>
+        <div class="container mt-4">
+          <div class="alert alert-danger">
+            <%= error_msg %>
+          </div>
+        </div>
+        <% } %>
+
+          <main>

@@ -1,0 +1,97 @@
+<%- include('../partials/header') %>
+
+  <div class="container py-5">
+    <h1 class="mb-5">Profile Settings</h1>
+
+    <div class="grid grid-cols-3 gap-6">
+      <!-- Profile Card -->
+      <div class="card col-span-2">
+        <div class="card-header">
+          <h3 class="card-title">Profile Information</h3>
+          <p class="card-description">Update your account information</p>
+        </div>
+        <div class="card-content">
+          <form action="/profile" method="POST">
+            <div class="flex items-center space-x-4 mb-5">
+              <div class="avatar">
+                <%= user.username.charAt(0).toUpperCase() %>
+              </div>
+              <div>
+                <button type="button" class="btn btn-outline">Change Avatar</button>
+                <p class="text-muted mt-1">JPG, GIF or PNG. 1MB max.</p>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="username" class="form-label">Username</label>
+              <input type="text" id="username" name="username" class="form-control" value="<%= user.username %>"
+                required>
+            </div>
+
+            <div class="form-group">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" id="email" name="email" class="form-control" value="<%= user.email %>" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Update Profile</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Account Card -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Account</h3>
+          <p class="card-description">Manage your account settings</p>
+        </div>
+        <div class="card-content">
+          <div class="mb-4">
+            <p class="text-muted mb-1">Account ID</p>
+            <p>
+              <%= user.id %>
+            </p>
+          </div>
+          <div class="mb-4">
+            <p class="text-muted">Account Balance</p>
+            <p class="text-lg font-bold">$<%= typeof user.balance==='number' ? user.balance.toFixed(2) :
+                parseFloat(user.balance || 0).toFixed(2) %>
+            </p>
+          </div>
+          <div class="mt-4">
+            <a href="/wallet" class="btn btn-outline btn-block mb-2">Manage Funds</a>
+            <a href="/auth/logout" class="btn btn-danger btn-block">Logout</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Password Card -->
+    <div class="card mt-6">
+      <div class="card-header">
+        <h3 class="card-title">Change Password</h3>
+        <p class="card-description">Update your password to keep your account secure</p>
+      </div>
+      <div class="card-content">
+        <form action="/profile/change-password" method="POST">
+          <div class="form-group">
+            <label for="current_password" class="form-label">Current Password</label>
+            <input type="password" id="current_password" name="current_password" class="form-control" required>
+          </div>
+
+          <div class="form-group">
+            <label for="new_password" class="form-label">New Password</label>
+            <input type="password" id="new_password" name="new_password" class="form-control" required>
+          </div>
+
+          <div class="form-group">
+            <label for="confirm_password" class="form-label">Confirm New Password</label>
+            <input type="password" id="confirm_password" name="confirm_password" class="form-control" required>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Change Password</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../partials/footer') %>

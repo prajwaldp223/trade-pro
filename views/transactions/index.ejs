@@ -1,0 +1,88 @@
+<%- include('../partials/header') %>
+
+  <div class="container py-5">
+    <h1 class="mb-5">Transaction History</h1>
+
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">All Transactions</h3>
+        <p class="card-description">Your complete transaction history</p>
+      </div>
+      <div class="card-content">
+        <% if (transactions.length> 0) { %>
+          <div class="table-container">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Type</th>
+                  <th>Details</th>
+                  <th class="text-right">Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% transactions.forEach(transaction=> { %>
+                  <tr>
+                    <td>
+                      <%= new Date(transaction.transaction_date).toLocaleDateString('en-US', { year: 'numeric' ,
+                        month: 'short' , day: 'numeric' , hour: '2-digit' , minute: '2-digit' }) %>
+                    </td>
+                    <td>
+                      <div class="flex items-center">
+                        <% if (transaction.type==='BUY' ) { %>
+                          <i class="fas fa-arrow-down text-danger mr-2"></i>
+                          <% } else if (transaction.type==='SELL' ) { %>
+                            <i class="fas fa-arrow-up text-success mr-2"></i>
+                            <% } else { %>
+                              <i class="fas fa-dollar-sign text-primary mr-2"></i>
+                              <% } %>
+                                <%= transaction.type %>
+                      </div>
+                    </td>
+                    <td>
+                      <% if (transaction.stock_id) { %>
+                        <div>
+                          <p class="font-medium">
+                            <%= transaction.stock_name %>
+                          </p>
+                          <p class="text-muted">
+                            <%= transaction.quantity %> shares at $<%= typeof transaction.price==='number' ?
+                                transaction.price.toFixed(2) : parseFloat(transaction.price || 0).toFixed(2) %>
+                          </p>
+                        </div>
+                        <% } else { %>
+                          <p>
+                            <%= transaction.type==='DEPOSIT' ? 'Funds added to account' : 'Funds withdrawn from account'
+                              %>
+                          </p>
+                          <% } %>
+                    </td>
+                    <td class="text-right">
+                      <span
+                        class="<%= (transaction.type === 'BUY' || transaction.type === 'WITHDRAWAL') ? 'text-danger' : 'text-success' %>">
+                        <%= (transaction.type==='BUY' || transaction.type==='WITHDRAWAL' ) ? '-' : '+' %>$<% if
+                            (transaction.total) { %>
+                            <%= typeof transaction.total==='number' ? transaction.total.toFixed(2) :
+                              parseFloat(transaction.total || 0).toFixed(2) %>
+                              <% } else { %>
+                                <%= typeof transaction.amount==='number' ? transaction.amount.toFixed(2) :
+                                  parseFloat(transaction.amount || 0).toFixed(2) %>
+                                  <% } %>
+                      </span>
+                    </td>
+                  </tr>
+                  <% }) %>
+              </tbody>
+            </table>
+          </div>
+          <% } else { %>
+            <div class="text-center py-5">
+              <p class="text-muted mb-4">You don't have any transactions yet.</p>
+              <a href="/stocks" class="btn btn-primary">Start Trading</a>
+            </div>
+            <% } %>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../partials/footer') %>

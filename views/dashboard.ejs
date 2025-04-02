@@ -1,0 +1,247 @@
+<%- include('partials/header') %>
+
+    <div class="container py-5">
+        <h1 class="mb-4">Dashboard</h1>
+
+        <!-- Overview Cards -->
+        <div class="grid grid-cols-4 mb-5">
+            <!-- Account Balance Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Account Balance</h3>
+                </div>
+                <div class="card-content">
+                    <p class="text-3xl font-bold">
+                        $<% if (typeof user.balance==='number' ) { %>
+                            <%= user.balance.toFixed(2) %>
+                                <% } else { %>
+                                    <%= parseFloat(user.balance || 0).toFixed(2) %>
+                                        <% } %>
+                    </p>
+                    <a href="/wallet" class="btn btn-outline btn-block">Manage Funds</a>
+                </div>
+            </div>
+
+            <!-- Portfolio Value Card -->
+            <div class="card">
+                <div class="card-content">
+                    <p class="text-muted mb-1">Portfolio Value</p>
+                    <% var portfolioValue=0; var portfolioCost=0; if (holdings && holdings.length> 0) {
+                        for (var i = 0; i < holdings.length; i++) { var holding=holdings[i]; portfolioValue
+                            +=parseFloat(holding.price || 0) * parseFloat(holding.quantity || 0); portfolioCost
+                            +=parseFloat(holding.avg_price || 0) * parseFloat(holding.quantity || 0); } } var
+                            portfolioProfit=portfolioValue - portfolioCost; var portfolioProfitPercent=(portfolioCost>
+                            0) ? (portfolioProfit / portfolioCost) * 100 : 0;
+                            %>
+                            <h2 class="mb-2">
+                                <i class="fas fa-briefcase text-muted"></i>
+                                $<%= portfolioValue.toFixed(2) %>
+                            </h2>
+                            <div>
+                                <% if (portfolioProfit>= 0) { %>
+                                    <i class="fas fa-arrow-up text-success"></i>
+                                    <span class="text-success">
+                                        +$<%= portfolioProfit.toFixed(2) %> (<%= portfolioProfitPercent.toFixed(2) %>%)
+                                    </span>
+                                    <% } else { %>
+                                        <i class="fas fa-arrow-down text-danger"></i>
+                                        <span class="text-danger">
+                                            -$<%= Math.abs(portfolioProfit).toFixed(2) %> (<%=
+                                                    Math.abs(portfolioProfitPercent).toFixed(2) %>%)
+                                        </span>
+                                        <% } %>
+                            </div>
+                </div>
+            </div>
+
+            <!-- Active Stocks Card -->
+            <div class="card">
+                <div class="card-content">
+                    <p class="text-muted mb-1">Active Stocks</p>
+                    <h2 class="mb-2">
+                        <i class="fas fa-chart-bar text-muted"></i>
+                        <% if (holdings) { %>
+                            <%= holdings.length %>
+                                <% } else { %>0<% } %>
+                    </h2>
+                    <a href="/portfolio" class="btn btn-outline btn-block">View Portfolio</a>
+                </div>
+            </div>
+
+            <!-- Market Status Card -->
+            <div class="card">
+                <div class="card-content">
+                    <p class="text-muted mb-1">Market Status</p>
+                    <h2 class="mb-2">
+                        <i class="fas fa-clock text-muted"></i>
+                        Open
+                    </h2>
+                    <a href="/stocks" class="btn btn-outline btn-block">View Market</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Portfolio Summary -->
+        <% if (holdings && holdings.length> 0) { %>
+            <div class="card mb-5">
+                <div class="card-header">
+                    <h3 class="card-title">Portfolio Summary</h3>
+                </div>
+                <div class="card-content">
+                    <div class="grid grid-cols-4 gap-6">
+                        <div>
+                            <p class="text-muted">Total Value</p>
+                            <p class="text-2xl font-bold">$<%= portfolioValue.toFixed(2) %>
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-muted">Total Cost</p>
+                            <p class="text-2xl font-bold">$<%= portfolioCost.toFixed(2) %>
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-muted">Total Profit/Loss</p>
+                            <div class="flex items-center">
+                                <i
+                                    class="fas fa-<%= portfolioProfit >= 0 ? 'arrow-up' : 'arrow-down' %> mr-1 <%= portfolioProfit >= 0 ? 'text-success' : 'text-danger' %>"></i>
+                                <p
+                                    class="text-2xl font-bold <%= portfolioProfit >= 0 ? 'text-success' : 'text-danger' %>">
+                                    <%= portfolioProfit>= 0 ? '+' : '-' %>$<%= Math.abs(portfolioProfit).toFixed(2) %>
+                                </p>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-muted">Return</p>
+                            <p class="text-2xl font-bold <%= portfolioProfit >= 0 ? 'text-success' : 'text-danger' %>">
+                                <%= portfolioProfit>= 0 ? '+' : '-' %><%= Math.abs(portfolioProfitPercent).toFixed(2) %>
+                                        %
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <% } %>
+
+                <!-- Main Content -->
+                <div class="grid grid-cols-2 gap-6">
+                    <!-- Top Performers -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Top Performers</h3>
+                            <p class="card-description">Best performing stocks today</p>
+                        </div>
+                        <div class="card-content">
+                            <% var topStocks=[]; if (stocks && stocks.length> 0) {
+                                topStocks = stocks.slice(); // Create a copy of the stocks array
+
+                                // Sort by change_percent
+                                topStocks.sort(function(a, b) {
+                                var aChange = parseFloat(a.change_percent || 0);
+                                var bChange = parseFloat(b.change_percent || 0);
+                                return bChange - aChange;
+                                });
+
+                                // Get top 3
+                                topStocks = topStocks.slice(0, 3);
+                                }
+                                %>
+
+                                <div class="space-y-4">
+                                    <% if (topStocks && topStocks.length> 0) { %>
+                                        <% for (var i=0; i < topStocks.length; i++) { %>
+                                            <% var stock=topStocks[i]; %>
+                                                <div class="flex justify-between items-center">
+                                                    <div>
+                                                        <p class="font-medium">
+                                                            <%= stock.name %>
+                                                        </p>
+                                                        <p class="text-muted">
+                                                            <%= stock.id %>
+                                                        </p>
+                                                    </div>
+                                                    <div class="text-right">
+                                                        <p class="font-medium">
+                                                            $<% if (typeof stock.price==='number' ) { %>
+                                                                <%= stock.price.toFixed(2) %>
+                                                                    <% } else { %>
+                                                                        <%= parseFloat(stock.price || 0).toFixed(2) %>
+                                                                            <% } %>
+                                                        </p>
+                                                        <% var stockChange=parseFloat(stock.change || 0); var
+                                                            stockChangePercent=parseFloat(stock.change_percent || 0);
+                                                            var changeClass=stockChange>= 0 ? 'text-success' :
+                                                            'text-danger';
+                                                            var changeSign = stockChange >= 0 ? '+' : '-';
+                                                            %>
+                                                            <p class="<%= changeClass %>">
+                                                                <%= changeSign %>$<%= Math.abs(stockChange).toFixed(2)
+                                                                        %> (<%= stockChangePercent.toFixed(2) %>%)
+                                                            </p>
+                                                    </div>
+                                                </div>
+                                                <% } %>
+                                                    <% } else { %>
+                                                        <p class="text-center text-muted">No stock data available</p>
+                                                        <% } %>
+
+                                                            <a href="/stocks"
+                                                                class="btn btn-outline btn-block mt-4">View All
+                                                                Stocks</a>
+                                </div>
+                        </div>
+                    </div>
+
+                    <!-- Your Holdings -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Your Holdings</h3>
+                            <p class="card-description">Recent stocks in your portfolio</p>
+                        </div>
+                        <div class="card-content">
+                            <% if (holdings && holdings.length> 0) { %>
+                                <div class="space-y-4">
+                                    <% var displayHoldings=holdings.slice(0, 3); for (var i=0; i <
+                                        displayHoldings.length; i++) { var holding=displayHoldings[i]; var
+                                        currentValue=parseFloat(holding.price || 0) * parseFloat(holding.quantity || 0);
+                                        var costBasis=parseFloat(holding.avg_price || 0) * parseFloat(holding.quantity
+                                        || 0); var profit=currentValue - costBasis; var profitPercent=(costBasis> 0) ?
+                                        (profit / costBasis) * 100 : 0;
+                                        var profitClass = profit >= 0 ? 'text-success' : 'text-danger';
+                                        var profitSign = profit >= 0 ? '+' : '-';
+                                        %>
+                                        <div class="flex justify-between items-center">
+                                            <div>
+                                                <p class="font-medium">
+                                                    <%= holding.name %>
+                                                </p>
+                                                <p class="text-muted">
+                                                    <%= holding.quantity %> shares @ $<%= parseFloat(holding.avg_price
+                                                            || 0).toFixed(2) %>
+                                                </p>
+                                            </div>
+                                            <div class="text-right">
+                                                <p class="font-medium">$<%= currentValue.toFixed(2) %>
+                                                </p>
+                                                <p class="<%= profitClass %>">
+                                                    <%= profitSign %>$<%= Math.abs(profit).toFixed(2) %> (<%=
+                                                                profitPercent.toFixed(2) %>%)
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <% } %>
+
+                                            <a href="/portfolio" class="btn btn-outline btn-block mt-4">View Full
+                                                Portfolio</a>
+                                </div>
+                                <% } else { %>
+                                    <div class="text-center py-4">
+                                        <p class="text-muted mb-4">You don't have any stocks in your portfolio yet.</p>
+                                        <a href="/stocks" class="btn btn-primary">Browse Stocks</a>
+                                    </div>
+                                    <% } %>
+                        </div>
+                    </div>
+                </div>
+    </div>
+
+    <%- include('partials/footer') %>

@@ -1,0 +1,145 @@
+<%- include('../partials/header') %>
+
+  <div class="container py-5">
+    <div class="flex justify-between items-center mb-5">
+      <div>
+        <h1 class="mb-1">Your Portfolio</h1>
+        <p class="text-muted">Track your investments and performance</p>
+      </div>
+      <form action="/stocks/refresh" method="POST">
+        <button type="submit" class="btn btn-outline">
+          <i class="fas fa-sync-alt mr-2"></i> Refresh Prices
+        </button>
+      </form>
+    </div>
+
+    <!-- Portfolio Summary -->
+    <div class="card mb-5">
+      <div class="card-header">
+        <h3 class="card-title">Portfolio Summary</h3>
+      </div>
+      <div class="card-content">
+        <div class="grid grid-cols-4 gap-6">
+          <div>
+            <p class="text-muted">Total Value</p>
+            <p class="text-2xl font-bold">$<%= typeof summary.totalValue==='number' ? summary.totalValue.toFixed(2) :
+                parseFloat(summary.totalValue || 0).toFixed(2) %>
+            </p>
+          </div>
+          <div>
+            <p class="text-muted">Total Cost</p>
+            <p class="text-2xl font-bold">$<%= typeof summary.totalCost==='number' ? summary.totalCost.toFixed(2) :
+                parseFloat(summary.totalCost || 0).toFixed(2) %>
+            </p>
+          </div>
+          <div>
+            <p class="text-muted">Total Profit/Loss</p>
+            <div class="flex items-center">
+              <i
+                class="fas fa-<%= summary.totalProfit >= 0 ? 'arrow-up' : 'arrow-down' %> mr-1 <%= summary.totalProfit >= 0 ? 'text-success' : 'text-danger' %>"></i>
+              <p class="text-2xl font-bold <%= summary.totalProfit >= 0 ? 'text-success' : 'text-danger' %>">
+                <%= summary.totalProfit>= 0 ? '+' : '' %>$<%= typeof summary.totalProfit==='number' ?
+                    summary.totalProfit.toFixed(2) : parseFloat(summary.totalProfit || 0).toFixed(2) %>
+              </p>
+            </div>
+          </div>
+          <div>
+            <p class="text-muted">Return</p>
+            <p class="text-2xl font-bold <%= summary.totalProfit >= 0 ? 'text-success' : 'text-danger' %>">
+              <%= summary.totalProfit>= 0 ? '+' : '' %><%= typeof summary.totalProfitPercent==='number' ?
+                  summary.totalProfitPercent.toFixed(2) : parseFloat(summary.totalProfitPercent || 0).toFixed(2) %>%
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Holdings -->
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Your Holdings</h3>
+        <p class="card-description">
+          <%= holdings.length %>
+            <%= holdings.length===1 ? 'stock' : 'stocks' %> in your portfolio
+        </p>
+      </div>
+      <div class="card-content">
+        <% if (holdings.length> 0) { %>
+          <div class="table-container">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Stock</th>
+                  <th class="text-right">Shares</th>
+                  <th class="text-right">Avg. Cost</th>
+                  <th class="text-right">Current Price</th>
+                  <th class="text-right">Market Value</th>
+                  <th class="text-right">Profit/Loss</th>
+                  <th class="text-right">Return</th>
+                  <th class="text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% holdings.forEach(holding=> { %>
+                  <tr>
+                    <td>
+                      <div>
+                        <p class="font-medium">
+                          <%= holding.name %>
+                        </p>
+                        <p class="text-muted">
+                          <%= holding.stock_id %>
+                        </p>
+                      </div>
+                    </td>
+                    <td class="text-right">
+                      <%= holding.quantity %>
+                    </td>
+                    <td class="text-right">$<%= typeof holding.avg_price==='number' ? holding.avg_price.toFixed(2) :
+                        parseFloat(holding.avg_price || 0).toFixed(2) %>
+                    </td>
+                    <td class="text-right">
+                      <div>
+                        <p>$<%= typeof holding.price==='number' ? holding.price.toFixed(2) : parseFloat(holding.price ||
+                            0).toFixed(2) %>
+                        </p>
+                        <p class="<%= holding.change >= 0 ? 'text-success' : 'text-danger' %>">
+                          <%= holding.change>= 0 ? '+' : '' %><%= typeof holding.change_percent==='number' ?
+                              holding.change_percent.toFixed(2) : parseFloat(holding.change_percent || 0).toFixed(2) %>%
+                        </p>
+                      </div>
+                    </td>
+                    <td class="text-right">$<%= typeof holding.currentValue==='number' ? holding.currentValue.toFixed(2)
+                        : parseFloat(holding.currentValue || 0).toFixed(2) %>
+                    </td>
+                    <td class="text-right">
+                      <div>
+                        <p class="<%= holding.profit >= 0 ? 'text-success' : 'text-danger' %>">
+                          <%= holding.profit>= 0 ? '+' : '' %>$<%= typeof holding.profit==='number' ?
+                              holding.profit.toFixed(2) : parseFloat(holding.profit || 0).toFixed(2) %>
+                        </p>
+                        <p class="<%= holding.profit >= 0 ? 'text-success' : 'text-danger' %>">
+                          <%= holding.profit>= 0 ? '+' : '' %><%= typeof holding.profitPercent==='number' ?
+                              holding.profitPercent.toFixed(2) : parseFloat(holding.profitPercent || 0).toFixed(2) %>%
+                        </p>
+                      </div>
+                    </td>
+                    <td class="text-center">
+                      <a href="/stocks/<%= holding.stock_id %>" class="btn btn-outline btn-sm">Trade</a>
+                    </td>
+                  </tr>
+                  <% }) %>
+              </tbody>
+            </table>
+          </div>
+          <% } else { %>
+            <div class="text-center py-5">
+              <p class="text-muted mb-4">You don't have any stocks in your portfolio yet.</p>
+              <a href="/stocks" class="btn btn-primary">Browse Stocks</a>
+            </div>
+            <% } %>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../partials/footer') %>

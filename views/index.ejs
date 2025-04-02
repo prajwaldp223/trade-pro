@@ -1,0 +1,79 @@
+<%- include('partials/header') %>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <div>
+          <div class="text-center">
+            <h1 class="hero-title">Trade Smarter, Not Harder</h1>
+            <br>
+            <br>
+            <p class="hero-description" >
+              Your all-in-one platform for stock trading with real-time updates and portfolio tracking.
+            </p>
+            <br>
+            <br>
+            <div class="hero-buttons flex justify-center gap-4">
+              <a href="/auth/register" class="btn btn-lg" style="background-color: white; color: #3b82f6;">Get
+                Started</a>
+              <a href="/auth/login" class="btn btn-lg" style="border: 1px solid white; color: white;">Login</a>
+            </div>
+          </div>
+        </div>
+        <div>
+          <img src="/img/Chart-iMac.png" alt="Trading platform dashboard" class="hero-image"
+            style="max-width: 100%; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features">
+    <div class="container">
+      <h2 class="features-title text-center mb-5">Why Choose Our Platform</h2>
+      <div class="grid grid-cols-3">
+        <div class="card feature-card">
+          <div class="card-content text-center">
+            <div class="feature-icon mb-3">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <h3 class="feature-title mb-2">Real-time Updates</h3>
+            <p>Get the latest stock prices and market trends with our real-time data updates.</p>
+          </div>
+        </div>
+        <div class="card feature-card">
+          <div class="card-content text-center">
+            <div class="feature-icon mb-3">
+              <i class="fas fa-dollar-sign"></i>
+            </div>
+            <h3 class="feature-title mb-2">Secure Transactions</h3>
+            <p>Deposit funds and trade with confidence on our secure platform.</p>
+          </div>
+        </div>
+        <div class="card feature-card">
+          <div class="card-content text-center">
+            <div class="feature-icon mb-3">
+              <i class="fas fa-users"></i>
+            </div>
+            <h3 class="feature-title mb-2">User-Friendly</h3>
+            <p>Intuitive interface designed for both beginners and experienced traders.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta">
+    <div class="container text-center">
+      <h2 class="cta-title">Ready to Start Trading?</h2>
+      <p class="cta-description">Join thousands of traders who have already discovered the benefits of our platform.</p>
+      <a href="/auth/register" class="btn btn-primary btn-lg">
+        Create an Account <i class="fas fa-arrow-right ml-2"></i>
+      </a>
+    </div>
+  </section>
+
+  <%- include('partials/footer') %>
